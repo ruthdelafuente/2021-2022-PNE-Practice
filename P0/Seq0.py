@@ -1,3 +1,4 @@
+from pathlib import Path
 def seq_ping():
     print("OK")
 
@@ -17,3 +18,19 @@ def seq_read_fasta(filename):
     seq = open(filename, "r").read()
     seq = seq[seq.find("\n"):].replace("\n", "")
     return seq
+
+def list_lenghts(list_genes, FOLDER):
+    lenght_list = []
+    for l in list_genes:
+        lenght = len(seq_read_fasta(FOLDER + l + ".txt"))
+        lenght_list.append(lenght)
+    return lenght_list
+
+def get_seq_list(FOLDER, list_genes):
+    seq_list = []
+    for l in list_genes:
+        filename = FOLDER + l + ".txt"
+        file_contents = Path(filename).read_text()
+        seq = file_contents[file_contents.find("\n"):].replace("\n", "")
+        seq_list.append(seq)
+    return seq_list
