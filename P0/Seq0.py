@@ -57,3 +57,20 @@ def seq_count(seq):
         list_dict.append(d)
         d = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
     return list_dict
+
+def seq_reverse(seq):
+    new_seq = ""
+    for e in seq:
+        new_seq = e + new_seq
+    return new_seq
+
+def seq_complement(seq):
+    d = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    comp = ""
+    i = 0
+    while i < len(seq):
+        for key, value in d.items():
+            if seq[i] == key:
+                comp += seq[i].replace(key, value)
+        i += 1
+    return comp
