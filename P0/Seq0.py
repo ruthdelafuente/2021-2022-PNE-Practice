@@ -45,3 +45,15 @@ def seq_count_base(seq, base):
             count_list.append(count)
         i += 1
     return count_list
+
+def seq_count(seq):
+    d = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+    list_dict = []
+    i = 0
+    while i < len(seq):
+        for key in d.keys():
+            d[key] = (seq[i].count(key))
+        i += 1
+        list_dict.append(d)
+        d = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
+    return list_dict
