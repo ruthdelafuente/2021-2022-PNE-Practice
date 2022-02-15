@@ -74,3 +74,14 @@ def seq_complement(seq):
                 comp += seq[i].replace(key, value)
         i += 1
     return comp
+
+def freq_base(list_dict):
+    higher = 0
+    max_list = []
+    for d in list_dict:
+        for key, value in d.items():
+            if d[key] > higher:
+                higher = d[key]
+        max_list.append(higher)
+        higher = 0
+    return max_list
