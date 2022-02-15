@@ -13,4 +13,3 @@ while i < len(freq_list):
                 print("Gene", list_genes[i], "Most frequent Base:", k)
         i += 1
 
-
