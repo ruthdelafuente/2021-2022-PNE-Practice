@@ -51,6 +51,20 @@ class Seq:
             return len(self.strbases)
 
     def count_base(self):
+        bases = ["A", "C", "G", "T"]
+        count_list = [0, 0, 0, 0]
+        if self.strbases == "NULL" or self.strbases == "Error":
+            zipped_list = list(zip(bases, count_list))
+            return zipped_list
+        else:
+            count_list = []
+            for e in bases:
+                count = (self.strbases.count(e))
+                count_list.append(count)
+            zipped_list = list(zip(bases, count_list))
+            return zipped_list
+
+    def count(self):
         d = {'A': 0, 'T': 0, 'C': 0, 'G': 0}
         if self.strbases == "NULL" or self.strbases == "Error":
             return d
@@ -58,3 +72,32 @@ class Seq:
             for key in d.keys():
                 d[key] = (self.strbases.count(key))
             return d
+
+    def reverse(self):
+        if self.strbases == "NULL":
+            return "NUll"
+        elif self.strbases == "Error":
+            return "ERROR"
+        else:
+            new_seq = ""
+            for e in self.strbases:
+                new_seq = e + new_seq
+            return new_seq
+    def complement(self):
+        if self.strbases == "NULL":
+            return "NUll"
+        elif self.strbases == "Error":
+            return "ERROR"
+        else:
+            d = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+            comp = ""
+            i = 0
+            while i < len(self.strbases):
+                for key, value in d.items():
+                    if self.strbases[i] == key:
+                        comp += self.strbases[i].replace(key, value)
+                i += 1
+            return comp
+
+    def read_fasta(self):
+        pass
