@@ -14,6 +14,11 @@ c = Client(IP, PORT)
 FOLDER = "../Session-04/"
 list_genes = ["U5", "ADA", "FRAT1"]
 
+'''for e in list_genes:
+    msg = str("Sending")
+    print(c.talk(msg))'''
+
+
 for e in list_genes:
     s = Seq()
     s.read_fasta(FOLDER, e)
@@ -21,10 +26,13 @@ for e in list_genes:
     response = c.talk(msg)
     print("To server: ", end="")
     termcolor.cprint(f"Sending {e} Gene to the server...", 'blue')
+
     print("From server: ", end="")
     termcolor.cprint(response, 'green')
+
     print("To server: ", end="")
     termcolor.cprint(s, 'blue')
+
     print("From server: ", end="")
     termcolor.cprint(response, 'green')
     print()
