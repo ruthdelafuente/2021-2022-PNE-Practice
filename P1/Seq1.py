@@ -99,13 +99,8 @@ class Seq:
                 i += 1
             return comp
 
-    def read_fasta(self, FILENAME):
-        seq = open(FILENAME, "r").read()
-        seq = seq[seq.find("\n"):].replace("\n", "")
-        self.strbases = seq
-
-    def get_seq(self, FOLDER, gene):
-        filename = FOLDER + gene + ".txt"
+    def read_fasta(self, FOLDER, FILENAME):
+        filename = FOLDER + FILENAME + ".txt"
         seq = open(filename, "r").read()
         seq = seq[seq.find("\n"):].replace("\n", "")
         self.strbases = seq
@@ -118,4 +113,3 @@ class Seq:
         for key, value in d.items():
             if d[key] == higher:
                 return key
-
