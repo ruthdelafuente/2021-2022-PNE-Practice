@@ -22,6 +22,7 @@ s = Seq()
 s.read_fasta(FOLDER, FILENAME)
 s = str(s)
 msg = (f"Gene FRAT1: {s}")
+print(msg)
 c2.talk(msg)
 c1.talk(msg)
 
@@ -37,3 +38,11 @@ while i < len(str(s)) and count < 11:
     i += 10
     count += 1
 
+i = 0
+count = 1
+while i < len(str(s)) and count < 11:
+    seq = s[i:i+10]
+    msg = f"Fragment {count}: {seq}"
+    print(msg)
+    i += 10
+    count += 1
