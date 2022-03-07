@@ -1,4 +1,5 @@
 import socket
+import colorama
 
 class Client:
     def __init__(self, ip, port):
@@ -19,5 +20,10 @@ class Client:
         s.close()
         return response
 
-    def debug_talk(self, msg):
-        pass
+    '''def debug_talk(self, msg):
+        s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        s.connect((self.ip, self.port))
+        s.send(str.encode(msg))
+        response = s.recv(2048).decode("utf-8")
+        s.close()
+        return response'''

@@ -20,10 +20,13 @@ list_genes = ["U5", "ADA", "FRAT1"]
 
 
 for e in list_genes:
+    msg = (f"Sending {e} Gene to server...")
+    c.talk(msg)
     s = Seq()
     s.read_fasta(FOLDER, e)
     msg = str(s)
     response = c.talk(msg)
+
     print("To server: ", end="")
     termcolor.cprint(f"Sending {e} Gene to the server...", 'blue')
 
