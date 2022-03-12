@@ -2,10 +2,8 @@ import socket
 import termcolor
 from Seq1 import Seq
 
+FOLDER = "../Session-04/"
 list_seq = ['ATCGTAGCTAGCATGCATGC', 'TTTGCGATGCACAGTCA', 'GACGTAGCTAGCTACTG', 'CTGAGCAGTTGCATGTGCTAAA', 'ACATGCTAGCTATCGAT']
-ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
 PORT = 8080
 IP = "127.0.0.1"
 
@@ -40,7 +38,22 @@ while True:
             print(response)
         elif cmd == "INFO":
             s = Seq(arg)
-            response = f"Total lenght: {str(s.len())}"
+            for k, v in s.count().items():
+                ptg = (v / 4) * 100
+            response = f"Total lenght: {str(s.len())} \n {str(s.count())}"
+            print(response)
+        elif cmd == "COMP":
+            s = Seq(arg)
+            response = str(s.complement())
+            print(response)
+        elif cmd == "REV":
+            s = Seq(arg)
+            response = str(s.reverse())
+            print(response)
+        elif cmd == "GENE":
+            s = Seq()
+            s.read_fasta(FOLDER, str(arg))
+            response = str(s)
             print(response)
 
         else:
