@@ -2,6 +2,15 @@ import socket
 import termcolor
 from Seq1 import Seq
 
+def convert_message(bases_dict, s):
+    message = ""
+    for k, v in bases_dict.items():
+        pcg = round((float(v)/(len(s))) * 100, 2)
+        print(pcg)
+        message += k + ": " + str(v) + " (" + str(pcg) + "%" + ")" "\n"
+
+    return message
+
 FOLDER = "../Session-04/"
 list_seq = ['ATCGTAGCTAGCATGCATGC', 'TTTGCGATGCACAGTCA', 'GACGTAGCTAGCTACTG', 'CTGAGCAGTTGCATGTGCTAAA', 'ACATGCTAGCTATCGAT']
 PORT = 8080
@@ -34,13 +43,18 @@ while True:
         if cmd == "PING":
             response = "OK!\n"
         elif cmd == "GET":
-            response = list_seq[int(arg)]
-            print(response)
+            try:
+                response = list_seq[int(arg)]
+                print(response)
+            except ValueError:
+                response = "The argument must be a number between 0 and 4"
+            except IndexError:
+                response = "The argument must be a number between 0 and 4"
         elif cmd == "INFO":
             s = Seq(arg)
-            for k, v in s.count().items():
-                ptg = (v / 4) * 100
-            response = f"Total lenght: {str(s.len())} \n {str(s.count())}"
+            bases_dict = s.count()
+            response = convert_message(bases_dict, str(s))
+            response = f"Total lenght: {str(s.len())}\n{response}"
             print(response)
         elif cmd == "COMP":
             s = Seq(arg)
