@@ -1,7 +1,5 @@
 import socket
-
-ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-ls.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
+#echo "PING"| ./nc  127.0.0.1 8080
 PORT = 8080
 IP = "192.168.124.179"
 ls = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
