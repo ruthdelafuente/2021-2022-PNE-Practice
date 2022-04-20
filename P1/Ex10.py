@@ -11,3 +11,4 @@ while i < len(list_genes):
     d = s.count()
     print("Gene", list_genes[i] + ":", "Most frequent Base:", s.freq_base(d))
     i += 1
+

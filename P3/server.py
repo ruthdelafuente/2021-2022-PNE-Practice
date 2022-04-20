@@ -8,8 +8,9 @@ def convert_message(bases_dict, s):
         pcg = round((float(v)/(len(s))) * 100, 2)
         print(pcg)
         message += k + ": " + str(v) + " (" + str(pcg) + "%" + ")" "\n"
-
     return message
+
+
 
 FOLDER = "../Session-04/"
 list_seq = ['ATCGTAGCTAGCATGCATGC', 'TTTGCGATGCACAGTCA', 'GACGTAGCTAGCTACTG', 'CTGAGCAGTTGCATGTGCTAAA', 'ACATGCTAGCTATCGAT']
@@ -45,7 +46,6 @@ while True:
         elif cmd == "GET":
             try:
                 response = list_seq[int(arg)]
-                print(response)
             except ValueError:
                 response = "The argument must be a number between 0 and 4"
             except IndexError:
@@ -55,22 +55,25 @@ while True:
             bases_dict = s.count()
             response = convert_message(bases_dict, str(s))
             response = f"Total lenght: {str(s.len())}\n{response}"
-            print(response)
         elif cmd == "COMP":
             s = Seq(arg)
             response = str(s.complement())
-            print(response)
         elif cmd == "REV":
             s = Seq(arg)
             response = str(s.reverse())
-            print(response)
         elif cmd == "GENE":
             s = Seq()
             s.read_fasta(FOLDER, str(arg))
             response = str(s)
-            print(response)
+        elif cmd == "ADD":
+            s = Seq(str(arg))
+            if s.valid_sequence():
+                response = str(s.sum_of_values())
+            else:
+                response = f"We could not multiply the bases since the sequence is not correct"
 
         else:
             response = "This command is not available in the server :-)\n"
+        print(response)
         cs.send(response.encode())
         cs.close()
