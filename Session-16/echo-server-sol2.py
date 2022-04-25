@@ -3,7 +3,7 @@ import socketserver
 import termcolor
 from pathlib import Path
 from urllib.parse import urlparse, parse_qs
-#from jinja2 import Template
+from jinja2 import Template
 
 # Define the Server's port
 PORT = 8080
@@ -12,9 +12,9 @@ PORT = 8080
 # -- This is for preventing the error: "Port already in use"
 socketserver.TCPServer.allow_reuse_address = True
 
-'''def read_template_html(filename):
+def read_template_html(filename):
     template = Template(Path(filename).read_text())
-    return template'''
+    return template
 # Class with our Handler. It is a called derived from BaseHTTPRequestHandler
 # It means that our class inheritates all his methods and properties
 class TestHandler(http.server.BaseHTTPRequestHandler):
