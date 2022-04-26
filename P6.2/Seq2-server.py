@@ -32,10 +32,22 @@ def convert_message(base_count):
 # Define the Server's port
 def info_operation(arg):
     base_count = count_bases(arg)
-    response = "<p> Sequence: " + arg + "</p>"
-    response += "<p> Total length: " + str(len(arg)) + "</p>"
+    response = arg + "\n"
+    response += "Total length: " + str(len(arg)) + "\n"
     response += convert_message(base_count)
     return response
+
+def complement(seq):
+    d = {'A': 'T', 'T': 'A', 'C': 'G', 'G': 'C'}
+    comp = ""
+    i = 0
+    while i < len(seq):
+        for key, value in d.items():
+            if seq[i] == key:
+                comp += seq[i].replace(key, value)
+        i += 1
+    return comp
+
 PORT = 8080
 
 
@@ -76,8 +88,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             operation = arguments["operation"][0]
             if operation == "rev":
                 contents = read_html_file(path[1:] + ".html").render(context={"operation": operation, "result": sequence[::-1]})
-            #elif operation == "info":
-                #contents = read_html_file(path[1:] + ".html").render(context={"operation": operation, "result": info_operation(sequence)})
+            elif operation == "info":
+                contents = read_html_file(path[1:] + ".html").render(context={"operation": operation, "result": info_operation(sequence)})
+            else:
+                contents = read_html_file(path[1:] + ".html").render(context={"operation": operation, "result": complement(sequence)})
 
         else:
             contents = "I am the happy server :)"
