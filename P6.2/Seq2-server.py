@@ -33,7 +33,7 @@ def convert_message(base_count):
 def info_operation(arg):
     base_count = count_bases(arg)
     response = arg + "\n"
-    response += "Total length: " + str(len(arg)) + "\n"
+    response += "<p> Total length: " + str(len(arg)) + "</p>"
     response += convert_message(base_count)
     return response
 
@@ -68,7 +68,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         # Print the request line
         termcolor.cprint(self.requestline, 'green')
         url_path = urlparse(self.path)
-        path = url_path.path
+        path = url_path.path #esto quita las interrogaciones
         arguments = parse_qs(url_path.query)
         print("The new path is:", url_path.path)
         if self.path == "/":
