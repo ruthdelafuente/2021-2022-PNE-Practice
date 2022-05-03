@@ -18,7 +18,7 @@ conn = http.client.HTTPConnection(SERVER)
 try:
     conn.request("GET", ENDPOINT + PARAMS) #we dont need the server
 except ConnectionRefusedError:
-    print("ERROR! Cannot connect to the Server")
+    print("ERROR! Cannot connect to the Server test")
     exit()
 
 # -- Read the response message from the server
