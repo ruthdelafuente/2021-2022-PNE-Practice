@@ -4,15 +4,19 @@
     <meta charset="utf-8">
     <title> SERVER </title>
     <h1> Browsing Human and Vertebrates genome </h1>
-    <p> BASIS Level Services </p>
-    <hr>
+    <h2> BASIC Level Services </h2>
   </head>
-  <body>
+  <body style="background-color: lightgoldenrodyellow;">
     <form action="/listSpecies" >
-       Limit:<input type="text" name="limit">
+      1) List of species in the genome database <br><br>
+       Limit : <input type="text" name="limit"> <br><br>
+      <input type="submit" value="Send">
+    </form>
+    <form action="/karyotype" ><br>
+      2) Information about the karyotype: <br><br>
+       Select the species : <input type="text" name="select"><br><br>
       <input type="submit" value="Send">
 
     </form>
-    <hr>
   </body>
 </html>

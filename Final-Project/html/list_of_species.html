@@ -1,12 +1,17 @@
 <!DOCTYPE html>
 <html lang="en" dir="ltr">
-      <head>
-        <meta charset="utf-8">
-        <title>Server</title>
-      </head>
-      <body style="background-color: white;">
-        <h2> Your list with limit {{context.my_lim}}: </h2>
-        <p>List : {{context.species}}</p>
-        <a href="/">Main page</a>
-      </body>
+<head>
+<meta charset="utf-8">
+<title>Server</title>
+</head>
+<body style="background-color: lightskyblue;">
+<p>The total number of species in ensembl is: {{context.total_number}} </p>
+<p>The limit you have selected is: {{context.my_lim}}: </p>
+<p>The names of the species are: </p>
+<br>
+  <p>{% for n in context.species %}</p>
+  <ul><li> {{n}} </li></ul>
+  {% endfor %}
+<a href="/">Main page</a>
+</body>
 </html>
