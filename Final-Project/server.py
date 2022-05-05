@@ -50,6 +50,8 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             list_karyotype = []
             list_karyotype.append(ens_answer["karyotype"])
             contents = read_html_file("karyotype.html").render(context={"chromosomes": ens_answer["karyotype"]})
+        elif path == "/chromosomeLength":
+            pass
         else:
             contents = "I am the happy server :)"
         self.send_response(200)
