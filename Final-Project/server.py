@@ -45,11 +45,17 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                     list_species.append(dict_answer["species"][i]["name"])
                 contents = read_html_file("list_of_species.html").render(context={"total_number": len(total_n_species),"my_lim": n_species, "species": list_species})
         elif path == "/karyotype":
-            specie = arguments["select"][0]
-            ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
-            list_karyotype = []
-            list_karyotype.append(ens_answer["karyotype"])
-            contents = read_html_file("karyotype.html").render(context={"chromosomes": ens_answer["karyotype"]})
+            try:
+                specie = arguments["select"][0]
+                ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
+                list_karyotype = []
+                try:
+                    list_karyotype.append(ens_answer["karyotype"])
+                    contents = read_html_file("karyotype.html").render(context={"chromosomes": ens_answer["karyotype"]})
+                except KeyError:
+                    contents = read_html_file("error.html").render()
+            except KeyError:
+                contents = read_html_file("error.html").render()
         elif path == "/chromosomeLength":
             pass
         else:
