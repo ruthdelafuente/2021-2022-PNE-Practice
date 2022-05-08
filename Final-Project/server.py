@@ -49,15 +49,18 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 specie = arguments["select"][0]
                 ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
                 list_karyotype = []
-                try:
-                    list_karyotype.append(ens_answer["karyotype"])
-                    contents = read_html_file("karyotype.html").render(context={"chromosomes": ens_answer["karyotype"]})
-                except KeyError:
-                    contents = read_html_file("error.html").render()
+                list_karyotype.append(ens_answer["karyotype"])
+                contents = read_html_file("karyotype.html").render(context={"chromosomes": ens_answer["karyotype"]})
             except KeyError:
                 contents = read_html_file("error.html").render()
         elif path == "/chromosomeLength":
-            pass
+            specie = arguments["name"][0]
+            chromosome = arguments["number"][0]
+            ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
+            for d in ens_answer["top_level_region"]:
+                if d["name"] == chromosome:
+                    length = d["length"]
+            contents = read_html_file("chromosome_length.html").render(context={"length": length})
         else:
             contents = "I am the happy server :)"
         self.send_response(200)
