@@ -11,6 +11,7 @@ from Seq1 import Seq
 
 HTML_FOLDER = "./html/"
 PARAMS = '?content-type=application/json' #if we want to append a parameter -> ej params should be &param1=a -> convert params -> params = "&number=" + str(n_sequence)
+genes_dict = {"SRCAP": "ENSG00000080603", "FRAT1": "ENSG00000165879", "ADA":"ENSG00000196839", "FXN":"ENSG00000165060","RNU6_269P":"ENSG00000212379", "MIR633":"ENSG00000207552", "TTTY4C":"ENSG00000228296", "RBMY2YP":"ENSG00000227633", "FGFR3":"ENSG00000068078", "KDR":"ENSG00000128052", "ANK2":"ENSG00000145362"}
 
 def read_html_file(filename):
     contents = Path(HTML_FOLDER + filename).read_text()
@@ -46,7 +47,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = read_html_file("list_of_species.html").render(context={"total_number": len(total_n_species),"my_lim": n_species, "species": list_species})
         elif path == "/karyotype":
             try:
-                specie = arguments["select"][0]
+                specie = arguments["specie"][0]
                 ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
                 list_karyotype = []
                 list_karyotype.append(ens_answer["karyotype"])
@@ -61,6 +62,25 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 if d["name"] == chromosome:
                     length = d["length"]
             contents = read_html_file("chromosome_length.html").render(context={"length": length})
+        elif path == "/geneSeq":
+            try:
+                gene_name = arguments["gene"][0]
+                seq_id = genes_dict[gene_name]
+                ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
+                contents = read_html_file("human_gene_seq.html").render(context={"gene": gene_name, "sequence": ens_answer['seq']})
+            except KeyError:
+                contents = read_html_file("error.html").render()
+        elif path == "/geneInfo":
+            #en desc = chromosome:GRCH38:10:TAL:PASCUAL:1 --> hazte una lista separando por los :, el numero de chromosome esta en la posicion 2, en la 3 el inicio
+            gene_name = arguments["gene_name"][0]
+            seq_id = genes_dict[gene_name]
+            ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
+            info_list = ens_answer["desc"].split(":")
+            contents = read_html_file("info_gene.html").render(context={"gene": gene_name, "start": info_list[3], "end": info_list[4], "length": len(ens_answer["seq"]), "name": info_list[1]})
+        elif path == "/geneCalc":
+            pass
+        elif path == "/geneList":
+            pass
         else:
             contents = "I am the happy server :)"
         self.send_response(200)
