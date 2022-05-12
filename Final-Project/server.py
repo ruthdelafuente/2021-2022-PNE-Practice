@@ -78,7 +78,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             info_list = ens_answer["desc"].split(":")
             contents = read_html_file("info_gene.html").render(context={"gene": gene_name, "start": info_list[3], "end": info_list[4], "length": len(ens_answer["seq"]), "name": info_list[1]})
         elif path == "/geneCalc":
-            pass
+            """gene_name = arguments["g_name"][0]
+            seq_id = genes_dict[gene_name]
+            ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
+            s = Seq(ens_answer['seq'])""" #esta sin acabar. Creo q lo q hay q hacer es coger la sequencia del gene y usar lo de most frq base de seq1
         elif path == "/geneList":
             pass
         else:
