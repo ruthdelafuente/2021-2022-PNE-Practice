@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <title> SERVER </title>
     <h1> Browsing Human and Vertebrates genome </h1>
-    <h2> BASIC Level Services </h2>
+    <h2> BASIC & MEDIUM Level Services </h2>
   </head>
   <body style="background-color: lightgoldenrodyellow;">
     <form action="/listSpecies" >
@@ -21,12 +21,15 @@
       3) Chromosome Length: <br><br>
        Select the species : <input type="text" name="name"><br><br>
        Select a chromosome : <input  type="text" name="number"><br><br>
-      <input type="submit" value="Send">
+      <input type="submit" value="Send"> <br><br>
     </form>
-    <form action="/geneSeq" ><br>
-      4) Sequence of the given gene: <br><br>
-       Select the gene : <input type="text" name="gene"><br><br>
-      <input type="submit" value="Send">
+    <form action="/geneSeq" >
+        4) Sequence of the given gene:
+      <select name="gene_name">
+        {% for g in context.genes %}
+        <option value="{{g}}"> {{g}} </option>
+        {% endfor %}
+      </select> <br><br> <input type="submit" value="Send">
     </form>
     <form action="/geneInfo" ><br>
     5) Information about a human gene: <br><br>
@@ -36,6 +39,13 @@
    <form action="/geneCalc" ><br>
     6) Calculations on a human gene: <br><br>
      Select the gene : <input type="text" name="g_name"><br><br>
+    <input type="submit" value="Send">
+    </form>
+  <form action="/geneList" ><br>
+    7) Introduce a chromosome: <br><br>
+     Select the gene : <input type="text" name="chromo"><br><br>
+     Select the start position : <input type="text" name="start"><br><br>
+     Select the end position : <input type="text" name="end"><br><br>
     <input type="submit" value="Send">
     </form>
   </body>

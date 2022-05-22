@@ -12,6 +12,9 @@ from Seq1 import Seq
 HTML_FOLDER = "./html/"
 PARAMS = '?content-type=application/json' #if we want to append a parameter -> ej params should be &param1=a -> convert params -> params = "&number=" + str(n_sequence)
 genes_dict = {"SRCAP": "ENSG00000080603", "FRAT1": "ENSG00000165879", "ADA":"ENSG00000196839", "FXN":"ENSG00000165060","RNU6_269P":"ENSG00000212379", "MIR633":"ENSG00000207552", "TTTY4C":"ENSG00000228296", "RBMY2YP":"ENSG00000227633", "FGFR3":"ENSG00000068078", "KDR":"ENSG00000128052", "ANK2":"ENSG00000145362"}
+genes_names = []
+for k, v in genes_dict.items():
+    genes_names.append(k)
 
 def read_html_file(filename):
     contents = Path(HTML_FOLDER + filename).read_text()
@@ -31,7 +34,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         print("The new path is:", url_path.path)
         print("my arg", arguments)
         if self.path == "/":
-            contents = read_html_file('index.html').render()
+            contents = read_html_file('index.html').render(context={"genes": genes_names})
         elif path == "/listSpecies":
             n_species = int(arguments["limit"][0])
             dict_answer = my_modules.requesting("info/species", PARAMS)
@@ -55,16 +58,20 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             except KeyError:
                 contents = read_html_file("error.html").render()
         elif path == "/chromosomeLength":
-            specie = arguments["name"][0]
-            chromosome = arguments["number"][0]
-            ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
-            for d in ens_answer["top_level_region"]:
-                if d["name"] == chromosome:
-                    length = d["length"]
-            contents = read_html_file("chromosome_length.html").render(context={"length": length})
-        elif path == "/geneSeq":
             try:
-                gene_name = arguments["gene"][0]
+                specie = arguments["name"][0]
+                chromosome = arguments["number"][0]
+                ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
+                for d in ens_answer["top_level_region"]:
+                    if d["name"] == chromosome:
+                        length = d["length"]
+                contents = read_html_file("chromosome_length.html").render(context={"length": length})
+            except KeyError:
+                contents = read_html_file("chromosome_length.html").render(context={"length": my_modules.change_message()})
+        elif path == "/geneSeq":
+            print(arguments)
+            try:
+                gene_name = arguments["gene_name"][0]
                 seq_id = genes_dict[gene_name]
                 ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
                 contents = read_html_file("human_gene_seq.html").render(context={"gene": gene_name, "sequence": ens_answer['seq']})
@@ -72,21 +79,43 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = read_html_file("error.html").render()
         elif path == "/geneInfo":
             #en desc = chromosome:GRCH38:10:TAL:PASCUAL:1 --> hazte una lista separando por los :, el numero de chromosome esta en la posicion 2, en la 3 el inicio
-            gene_name = arguments["gene_name"][0]
-            seq_id = genes_dict[gene_name]
-            ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
-            info_list = ens_answer["desc"].split(":")
-            contents = read_html_file("info_gene.html").render(context={"gene": gene_name, "start": info_list[3], "end": info_list[4], "length": len(ens_answer["seq"]), "name": info_list[1]})
+            try:
+                gene_name = arguments["gene_name"][0]
+                seq_id = genes_dict[gene_name]
+                ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
+                info_list = ens_answer["desc"].split(":")
+                contents = read_html_file("info_gene.html").render(context={"gene": gene_name, "start": info_list[3], "end": info_list[4], "length": len(ens_answer["seq"]), "name": info_list[1]})
+            except KeyError:
+                contents = read_html_file("error.html").render()
         elif path == "/geneCalc": #haz un select con las keys de gene_dict
-            gene_name = arguments["g_name"][0]
-            seq_id = genes_dict[gene_name]
-            ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
-            s = Seq(ens_answer['seq'])
-            bases_dict = s.count()
-            contents = read_html_file("gene_calc.html").render(context={"gene": gene_name, "sequence": ens_answer['seq'], "length": s.len(), "percentages": my_modules.convert_message(bases_dict)})
-            #esta sin acabar. Creo q lo q hay q hacer es coger la sequencia del gene y usar lo de most frq base de seq1
+            try:
+                gene_name = arguments["g_name"][0]
+                seq_id = genes_dict[gene_name]
+                ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
+                s = Seq(ens_answer['seq'])
+                bases_dict = s.count()
+                contents = read_html_file("gene_calc.html").render(context={"gene": gene_name, "sequence": ens_answer['seq'], "length": s.len(), "percentages": my_modules.convert_message(bases_dict, s.len())})
+            except KeyError:
+                contents = read_html_file("error.html").render()
         elif path == "/geneList":
-            pass
+            try:
+                chromosome = arguments["chromo"][0]
+                start = str(arguments["start"][0])
+                end = str(arguments["end"][0])
+                request = chromosome + ":" + start + "-" + end
+                ens_answer = my_modules.requesting("/phenotype/region/homo_sapiens/" + request, PARAMS)
+                names_list = []
+                for d in ens_answer:
+                    for l in d["phenotype_associations"]:
+                        try:
+                            names_list.append(l["attributes"]["associated_gene"])
+                        except KeyError:
+                            pass
+                contents = read_html_file("gene_list.html").render(context={"chromo": chromosome, "names": names_list})
+            except KeyError:
+                contents = read_html_file("error.html").render()
+            except TypeError:
+                contents = read_html_file("error.html").render()
         else:
             contents = "I am the happy server :)"
         self.send_response(200)

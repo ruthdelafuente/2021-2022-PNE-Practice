@@ -5,8 +5,10 @@
 <title>Server</title>
 </head>
 <body style="background-color: lightblue;">
-<p>The sequence of the gene {{context.gene}} is: <br><br>
-{{context.sequence}} </p>
+<p> Genes located in the chromosome {{context.chromo}} is: <br><br>
+<p>{% for n in context.names %}</p>
+  <ul><li> {{n}} </li></ul>
+  {% endfor %}
 <a href="/">Main page</a>
 </body>
 </html>
