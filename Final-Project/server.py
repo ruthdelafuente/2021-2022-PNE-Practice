@@ -1,4 +1,5 @@
 import http.server
+import json
 import socketserver
 import termcolor
 from pathlib import Path
@@ -35,6 +36,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         if self.path == "/":
             contents = read_html_file('index.html').render(context={"genes": genes_names, "g": genes_names })
         elif path == "/listSpecies":
+            print(arguments)
             try:
                 n_species = int(arguments["limit"][0])
                 dict_answer = my_modules.requesting("info/species", PARAMS)
@@ -47,7 +49,12 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 else:
                     for i in range(n_species):
                         list_species.append(dict_answer["species"][i]["name"])
-                    contents = read_html_file("list_of_species.html").render(context={"total_number": len(total_n_species),"my_lim": n_species, "species": list_species})
+                    if "json" not in arguments.keys():
+                        contents = read_html_file("list_of_species.html").render(context={"total_number": len(total_n_species), "my_lim": n_species,"species": list_species})
+                    elif arguments["json"] != ['1']:
+                        contents = read_html_file("error.html").render()
+                    elif arguments["json"] == ['1']:
+                        contents = json.dumps({"Length": len(total_n_species), "Limit": n_species, "Species": list_species})
             except ValueError:
                 contents = read_html_file("error.html").render()
             except KeyError:
