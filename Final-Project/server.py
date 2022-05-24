@@ -11,7 +11,7 @@ from Seq1 import Seq
 
 HTML_FOLDER = "./html/"
 PARAMS = '?content-type=application/json' #if we want to append a parameter -> ej params should be &param1=a -> convert params -> params = "&number=" + str(n_sequence)
-genes_dict = {"SRCAP": "ENSG00000080603", "FRAT1": "ENSG00000165879", "ADA":"ENSG00000196839", "FXN":"ENSG00000165060","RNU6_269P":"ENSG00000212379", "MIR633":"ENSG00000207552", "TTTY4C":"ENSG00000228296", "RBMY2YP":"ENSG00000227633", "FGFR3":"ENSG00000068078", "KDR":"ENSG00000128052", "ANK2":"ENSG00000145362"}
+genes_dict = {"SRCAP": "ENSG00000080603", "FRAT1": "ENSG00000165879", "ADA": "ENSG00000196839", "FXN": "ENSG00000165060","RNU6_269P":"ENSG00000212379", "MIR633":"ENSG00000207552", "TTTY4C":"ENSG00000228296", "RBMY2YP":"ENSG00000227633", "FGFR3":"ENSG00000068078", "KDR":"ENSG00000128052", "ANK2":"ENSG00000145362"}
 genes_names = []
 for k, v in genes_dict.items():
     genes_names.append(k)
@@ -27,6 +27,7 @@ socketserver.TCPServer.allow_reuse_address = True
 class TestHandler(http.server.BaseHTTPRequestHandler):
 
     def do_GET(self):
+        global length
         termcolor.cprint(self.requestline, 'green')
         url_path = urlparse(self.path)
         path = url_path.path #esto quita las interrogaciones
@@ -49,12 +50,9 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 else:
                     for i in range(n_species):
                         list_species.append(dict_answer["species"][i]["name"])
-                    if "json" not in arguments.keys():
-                        contents = read_html_file("list_of_species.html").render(context={"total_number": len(total_n_species), "my_lim": n_species,"species": list_species})
-                    elif arguments["json"] != ['1']:
-                        contents = read_html_file("error.html").render()
-                    elif arguments["json"] == ['1']:
-                        contents = json.dumps({"Length": len(total_n_species), "Limit": n_species, "Species": list_species})
+                    filename = "list_of_species.html"
+                    d = {"total_number": len(total_n_species), "my_lim": n_species,"species": list_species}
+                    contents = my_modules.check_json(arguments, filename, d)
             except ValueError:
                 contents = read_html_file("error.html").render()
             except KeyError:
@@ -63,9 +61,11 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
             try:
                 specie = arguments["specie"][0]
                 ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
-                list_karyotype = []
-                list_karyotype.append(ens_answer["karyotype"])
-                contents = read_html_file("karyotype.html").render(context={"chromosomes": ens_answer["karyotype"]})
+                filename = "karyotype.html"
+                d = {"chromosomes": ens_answer["karyotype"]}
+                contents = my_modules.check_json(arguments, filename, d)
+                if ens_answer["karyotype"] == []:
+                    contents = read_html_file("error.html").render()
             except KeyError:
                 contents = read_html_file("error.html").render()
         elif path == "/chromosomeLength":
@@ -73,34 +73,40 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 specie = arguments["name"][0]
                 chromosome = arguments["number"][0]
                 ens_answer = my_modules.requesting("info/assembly/" + specie, PARAMS)
+                names_list = []
+                for d in ens_answer["top_level_region"]:
+                    names_list.append(d["name"])
                 for d in ens_answer["top_level_region"]:
                     if d["name"] == chromosome:
                         length = d["length"]
-                contents = read_html_file("chromosome_length.html").render(context={"length": length})
+                d = {"length": length}
+                if chromosome not in names_list:
+                    contents = read_html_file("error.html").render()
+                else:
+                    contents = my_modules.check_json(arguments, "chromosome_length.html", d)
             except KeyError:
                 contents = read_html_file("chromosome_length.html").render(context={"length": my_modules.change_message()})
+            except NameError:
+                contents = read_html_file("chromosome_length.html").render(context={"length": my_modules.change_message()})
         elif path == "/geneSeq":
-            try:
-                gene_name = arguments["gene_name"][0]
-                seq_id = genes_dict[gene_name]
-                ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
-                contents = read_html_file("human_gene_seq.html").render(context={"gene": gene_name, "sequence": ens_answer['seq']})
-            except KeyError:
-                contents = read_html_file("error.html").render()
+            gene_name = arguments["gene_name"][0]
+            seq_id = genes_dict[gene_name]
+            ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
+            contents = my_modules.check_json(arguments, "human_gene_seq.html", {"gene": gene_name, "sequence": ens_answer['seq']})
         elif path == "/geneInfo":
             #en desc = chromosome:GRCH38:10:TAL:PASCUAL:1 --> hazte una lista separando por los :, el numero de chromosome esta en la posicion 2, en la 3 el inicio
             gene_name = arguments["gene_name"][0]
             seq_id = genes_dict[gene_name]
             ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
             info_list = ens_answer["desc"].split(":")
-            contents = read_html_file("info_gene.html").render(context={"gene": gene_name, "start": info_list[3], "end": info_list[4], "length": len(ens_answer["seq"]), "name": info_list[1]})
+            contents = my_modules.check_json(arguments, "info_gene.html", {"gene": gene_name, "start": info_list[3], "end": info_list[4], "length": len(ens_answer["seq"]), "name": info_list[1]})
         elif path == "/geneCalc": #haz un select con las keys de gene_dict
             gene_name = arguments["g_name"][0]
             seq_id = genes_dict[gene_name]
             ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
             s = Seq(ens_answer['seq'])
             bases_dict = s.count()
-            contents = read_html_file("gene_calc.html").render(context={"gene": gene_name, "sequence": ens_answer['seq'], "length": s.len(), "percentages": my_modules.convert_message(bases_dict, s.len())})
+            contents = my_modules.check_json(arguments, "gene_calc.html",{"gene": gene_name, "sequence": ens_answer['seq'], "length": s.len(), "percentages": my_modules.convert_message(bases_dict, s.len())})
         elif path == "/geneList":
             try:
                 chromosome = arguments["chromo"][0]
@@ -108,7 +114,6 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 end = str(arguments["end"][0])
                 request = chromosome + ":" + start + "-" + end
                 ens_answer = my_modules.requesting("/phenotype/region/homo_sapiens/" + request, PARAMS)
-                print(ens_answer)
                 names_list = []
                 for d in ens_answer:
                     for l in d["phenotype_associations"]:
@@ -116,11 +121,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                             names_list.append(l["attributes"]["associated_gene"])
                         except KeyError:
                             pass
-                print(names_list)
                 if not names_list:
                     contents = read_html_file("gene_list.html").render(context={"chromo": chromosome, "names": ["ERROR. The start and end positions may be wrong"]})
                 else:
-                    contents = read_html_file("gene_list.html").render(context={"chromo": chromosome, "names": names_list})
+                    contents = my_modules.check_json(arguments, "gene_list.html", {"chromo": chromosome, "names": names_list})
             except KeyError:
                 contents = read_html_file("error.html").render()
             except TypeError:

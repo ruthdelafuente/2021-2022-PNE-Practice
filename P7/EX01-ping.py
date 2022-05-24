@@ -35,3 +35,4 @@ else:
     print("ERROR!!! The data base is not running")
 # -- Print the received data
 print(f"CONTENT: {data1}")
+print(type(data1))

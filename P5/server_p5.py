@@ -22,7 +22,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         print("GET received! Request line:")
 
         # Print the request line
-        termcolor.cprint("  " + self.requestline, 'green')
+        termcolor.cprint("  " + self.requestline, 'blue')
 
         # Print the command received (should be GET)
         print("  Command: " + self.command)
