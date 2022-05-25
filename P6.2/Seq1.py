@@ -83,6 +83,7 @@ class Seq:
             for e in self.strbases:
                 new_seq = e + new_seq
             return new_seq
+
     def complement(self):
         if self.strbases == "NULL":
             return "NUll"
