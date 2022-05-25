@@ -1,5 +1,4 @@
 import http.server
-import json
 import socketserver
 import termcolor
 from pathlib import Path
