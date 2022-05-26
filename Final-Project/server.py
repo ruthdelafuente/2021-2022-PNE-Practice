@@ -33,10 +33,10 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         arguments = parse_qs(url_path.query)
         print("The new path is:", url_path.path)
         print("my arg", arguments)
+        #BASIC LEVEL SERVICES
         if self.path == "/":
             contents = read_html_file('index.html').render(context={"genes": genes_names, "g": genes_names })
         elif path == "/listSpecies":
-            print(arguments)
             try:
                 n_species = int(arguments["limit"][0])
                 dict_answer = my_modules.requesting("info/species", PARAMS)
@@ -87,19 +87,19 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
                 contents = read_html_file("chromosome_length.html").render(context={"length": my_modules.change_message()})
             except NameError:
                 contents = read_html_file("chromosome_length.html").render(context={"length": my_modules.change_message()})
+        #MEDIUM LEVEL SERVICES
         elif path == "/geneSeq":
             gene_name = arguments["gene_name"][0]
             seq_id = genes_dict[gene_name]
             ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
             contents = my_modules.check_json(arguments, "human_gene_seq.html", {"gene": gene_name, "sequence": ens_answer['seq']})
         elif path == "/geneInfo":
-            #en desc = chromosome:GRCH38:10:TAL:PASCUAL:1 --> hazte una lista separando por los :, el numero de chromosome esta en la posicion 2, en la 3 el inicio
             gene_name = arguments["gene_name"][0]
             seq_id = genes_dict[gene_name]
             ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)
             info_list = ens_answer["desc"].split(":")
             contents = my_modules.check_json(arguments, "info_gene.html", {"gene": gene_name, "start": info_list[3], "end": info_list[4], "length": len(ens_answer["seq"]), "name": info_list[1]})
-        elif path == "/geneCalc": #haz un select con las keys de gene_dict
+        elif path == "/geneCalc":
             gene_name = arguments["g_name"][0]
             seq_id = genes_dict[gene_name]
             ens_answer = my_modules.requesting("sequence/id/" + str(seq_id), PARAMS)

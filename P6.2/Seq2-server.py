@@ -71,6 +71,7 @@ class TestHandler(http.server.BaseHTTPRequestHandler):
         path = url_path.path #esto quita las interrogaciones
         arguments = parse_qs(url_path.query)
         print("The new path is:", url_path.path)
+        print(arguments)
         if self.path == "/":
             contents = read_html_file('index.html').render(context={"n_sequences": len(LIST_SEQUENCES), "genes": LIST_GENES})
         elif path == "/ping":
